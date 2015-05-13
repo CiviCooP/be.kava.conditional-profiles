@@ -47,16 +47,19 @@ class CRM_CondProfiles_UFFormGroupHandler {
 		/** @var $form CRM_UF_Form_Group */
 
 		$groupId = $form->get('id');
-		$group = $form->getElementValue('option_group_restriction');
+		if($groupId) {
+			$group = $form->getElementValue('option_group_restriction');
 
-		$pos = $form->getElementValue('option_group_restriction_pos');
-		if(is_array($pos))
-			$pos = $pos[0];
+			$pos = $form->getElementValue('option_group_restriction_pos');
+			if(is_array($pos))
+				$pos = $pos[0];
 
-		self::deleteAllRestrictions($groupId);
+			self::deleteAllRestrictions($groupId);
 
-		foreach($group as $g) {
-			self::addRestriction($groupId, $g, $pos);
+			foreach($group as $g) {
+				self::addRestriction($groupId, $g, $pos);
+			}
+
 		}
 
 		return $form;

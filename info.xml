@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<extension key="be.kava.conditional-profiles" type="module">
+  <file>condprofiles</file>
+  <name>Conditional Profiles</name>
+  <description>This extension allows displaying custom fields on event registration pages only to certain groups</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>Kevin Levie</author>
+    <email>kevin.levie@civicoop.org</email>
+  </maintainer>
+  <releaseDate>2015-05-12</releaseDate>
+  <version>1.0</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.6</ver>
+  </compatibility>
+  <civix>
+    <namespace>CRM/CondProfiles</namespace>
+  </civix>
+</extension>

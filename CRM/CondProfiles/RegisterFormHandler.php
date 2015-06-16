@@ -16,26 +16,40 @@ class CRM_CondProfiles_RegisterFormHandler {
 		$eventId = $form->get('id');
 		$userId = CRM_Core_Session::singleton()->get('userID');
 
-		// Get the profiles that should be removed and the fields that belong to these profiles
+		// Get the profiles that should be removed
 		$profilesToRemove = self::findProfilesToRemove($eventId, $userId);
-		$fieldsToRemove = self::findFieldsToRemove($profilesToRemove);
+		// $fieldsToRemove = self::findFieldsToRemove($profilesToRemove); -> Not needed anymore
 
-		// echo '<pre>Removing profiles: ' . implode(',', $profilesToRemove) . '<br />Removing fields: ' . print_r($fieldsToRemove, true) . '</pre>';
+		// echo '<pre>Removing profiles: ' . implode(',', $profilesToRemove) . '</pre>';
 
-		/** @var $form CRM_UF_Form_Group */
-		// Get field names from the form for all elements - there may be a function for this but I couldn't find it
-		$fieldNames = array();
-		foreach ($form->_fields as $f) {
-			$fieldNames[$f['field_id']] = $f['name'];
+		/** @var $form CRM_Event_Form_Registration_Register */
+		// Walk fields and remove elements that belong to these profiles
+		$removeFromTemplate = array();
+		foreach($form->_fields as $fkey => $field) {
+			if(in_array($field['group_id'], $profilesToRemove)) {
+				$form->removeElement($field['name']);
+				$removeFromTemplate[] = $field['name'];
+			}
 		}
 
-		// Remove fields from the form
-		// TODO doesn't seem to work completely, field is still passed to template (in $fields in UF/Form/Block.tpl)
-		foreach ($fieldsToRemove as $field) {
-			if (array_key_exists($field['id'], $fieldNames) && in_array($field['uf_group_id'], $profilesToRemove)) {
-				$fieldName = $fieldNames[$field['id']];
-				$form->removeElement($fieldName);
+		// Eureka! This is how we force the template to show the updated fields arrays:
+		// Walk the already assigned customPre/customPost fields and remove fields from templates
+		$customPreAssigned = $form->getTemplate()->get_template_vars('customPre');
+		if($customPreAssigned && count($customPreAssigned) > 0) {
+			foreach($customPreAssigned as $key => $field) {
+				if(in_array($key, $removeFromTemplate))
+					unset($customPreAssigned[$key]);
 			}
+			$form->assign('customPre', $customPreAssigned);
+		}
+
+		$customPostAssigned = $form->getTemplate()->get_template_vars('customPost');
+		if($customPostAssigned && count($customPostAssigned) > 0) {
+			foreach($customPostAssigned as $key => $field) {
+				if(in_array($key, $removeFromTemplate))
+					unset($customPostAssigned[$key]);
+			}
+			$form->assign('customPost', $customPostAssigned);
 		}
 
 		return $form;
@@ -105,7 +119,7 @@ class CRM_CondProfiles_RegisterFormHandler {
 	 * @param array $profileIds Profile IDs
 	 * @return array Array of fields
 	 */
-	private static function findFieldsToRemove($profileIds = array()) {
+	/* private static function findFieldsToRemove($profileIds = array()) {
 
 		if(count($profileIds) == 0)
 			return array();
@@ -114,7 +128,7 @@ class CRM_CondProfiles_RegisterFormHandler {
 			'uf_group_id' => array('IN' => $profileIds),
 		));
 		return $fields['values'];
-	}
+	} */
 
 	/**
 	 * Finds all groups (including smart groups) a user belongs to

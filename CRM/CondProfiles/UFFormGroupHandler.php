@@ -56,8 +56,10 @@ class CRM_CondProfiles_UFFormGroupHandler {
 
 			self::deleteAllRestrictions($groupId);
 
-			foreach($group as $g) {
-				self::addRestriction($groupId, $g, $pos);
+			if($group && count($group) > 0) {
+				foreach ($group as $g) {
+					self::addRestriction($groupId, $g, $pos);
+				}
 			}
 
 		}

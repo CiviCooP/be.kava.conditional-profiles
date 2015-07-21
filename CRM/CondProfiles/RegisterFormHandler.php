@@ -20,6 +20,7 @@ class CRM_CondProfiles_RegisterFormHandler {
 		$profilesToRemove = self::findProfilesToRemove($eventId, $userId);
 		// $fieldsToRemove = self::findFieldsToRemove($profilesToRemove); -> Not needed anymore
 
+	    // echo '<pre>' . $_SESSION['CiviCRM']['ufID'] . ' '  . $_SESSION['CiviCRM']['userID'] . ' ' . $userId . '</pre>';
 		// echo '<pre>Removing profiles: ' . implode(',', $profilesToRemove) . '</pre>';
 
 		/** @var $form CRM_Event_Form_Registration_Register */
@@ -158,10 +159,10 @@ class CRM_CondProfiles_RegisterFormHandler {
 			$_fetchSmartGroups = civicrm_api3("Group","get", array("options" => array("sort" => "title", "limit" => 0)));
 			// Check if the groups aint empty
 			if(empty($_fetchSmartGroups['is_error']) && !empty($_fetchSmartGroups['values'])) {
-				// Loop trough all the results
+				// Loop through all the results
 				foreach($_fetchSmartGroups['values'] as $_smartGroup) {
 					// Check if current group is a smart group
-					if($_smartGroup['saved_search_id'] > 0) {
+					if(array_key_exists('saved_search_id', $_smartGroup) && $_smartGroup['saved_search_id'] > 0) {
 						// Attempt to fetch contact with smart group id and user identifier
 						$_attemptToFetchContact = civicrm_api3("Contact","get",array("contact_id" => $userId, "group" => $_smartGroup['id']));
 						// Check if we did find the contact

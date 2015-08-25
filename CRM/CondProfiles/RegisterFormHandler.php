@@ -53,6 +53,11 @@ class CRM_CondProfiles_RegisterFormHandler {
 			$form->assign('customPost', $customPostAssigned);
 		}
 
+	  	// Quick last-minute hack: make name/email profile fields read only
+	  	CRM_Core_Region::instance('page-body')->add(array(
+		  'template' => "CRM/Event/Form/Registration/ProfileReadonly.tpl",
+	  	));
+
 		return $form;
 	}
 
